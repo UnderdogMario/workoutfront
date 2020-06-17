@@ -3,19 +3,18 @@
         <div class="login-page">
             <div class="form">
                 <form class="login-form" v-on:submit.prevent="onSubmit">
-                    <input type="text" placeholder="username" name="loginname"/>
+                    <input type="text" placeholder="username" name="loginemail"/>
                     <input type="password" placeholder="password" name="loginpassword"/>
                     <button>login</button>
-                    <p class="message">Not registered? <a href="#">Create an account</a></p>
                 </form>
             </div>
         </div>
-
     </div>
 </template>
 
 <script>
-    // import axios from 'axios';
+    import axios from 'axios';
+    import qs from 'qs'
     export default {
         name: "Login",
         data () {
@@ -26,7 +25,20 @@
 
         methods: {
             onSubmit: function (submitEvent) {
-                console.log(submitEvent.target.elements.loginname.value)
+                axios({
+                    url:'http://localhost:8000/login',
+                    method:'POST',
+                    withCredentials:false,
+                    data:qs.stringify({
+                        email: submitEvent.target.elements.loginemail.value,
+                        password: submitEvent.target.elements.loginpassword.value
+                    }),
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    }
+                }).then(function (response) {
+                    console.log(response);
+                })
             }
         },
 
