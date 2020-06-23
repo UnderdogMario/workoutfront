@@ -44,17 +44,15 @@
                 </li>
                 <li class="px-3 py-2 mt-2" v-if="this.$store.state.login">
                   <ul class="list-group list-group-flush">
-                    <li class="list-group-item">
-                      Email: {{this.userInfo.Email}}
-                    </li>
-                    <li class="list-group-item">Name: {{this.userInfo.Name}}</li>
-                    <li class="list-group-item">Phone: {{this.userInfo.Phone}}</li>
-                    <li class="list-group-item">
-                      <button type="button" class="btn btn-info block">Edit <font-awesome-icon class="icon" icon="pen"/></button>
-                    </li>
+                    <li class="list-group-item" v-if="!ifedit">Email: {{this.userInfo.Email}}</li>
+                    <li class="list-group-item" v-if="ifedit">Email: <input type="text" v-model="this.userInfo.Email"></li>
+                    <li class="list-group-item" v-if="!ifedit">Name: {{this.userInfo.Name}}</li>
+                    <li class="list-group-item" v-if="ifedit">Email: <input type="text" v-model="this.userInfo.Name"></li>
+                    <li class="list-group-item" v-if="!ifedit">Phone: {{this.userInfo.Phone}}</li>
+                    <li class="list-group-item" v-if="ifedit">Email: <input type="text" v-model="this.userInfo.Phone"></li>
+                    <li class="list-group-item"><button type="button" class="btn btn-info block" v-on:click="edit">Edit <font-awesome-icon class="icon" icon="pen"/></button></li>
                   </ul>
                 </li>
-
               </ul>
             </li>
           </ul>
@@ -67,6 +65,14 @@
 <script>
 // @ is an alias to /src
 import axios from 'axios';
+import $ from 'jquery'
+$('.dropdown-toggle').on('click', function () {
+  $(this).next().toggle();
+});
+$('.dropdown-menu.keep-open').on('click', function (e) {
+  e.stopPropagation();
+});
+
 export default {
   name: 'Home',
   components: {
@@ -75,7 +81,8 @@ export default {
   data: function () {
     return {
       fail: false,
-      userInfo:{}
+      userInfo:{},
+      ifedit: false
     }
   },
   computed: {
@@ -92,7 +99,6 @@ export default {
   },
   methods: {
     onSubmit: function (submitEvent) {
-
       if (submitEvent.submitter.id == "login") {
         axios({
           url: 'http://localhost:8000/login',
@@ -138,8 +144,12 @@ export default {
           console.log(response)
         })
       }
+    },
+    edit: function () {
+      this.ifedit = true
     }
   },
+
 }
 </script>
 
