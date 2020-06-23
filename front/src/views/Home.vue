@@ -45,12 +45,12 @@
                 <li class="px-3 py-2 mt-2" v-if="this.$store.state.login">
                   <ul class="list-group list-group-flush">
                     <li class="list-group-item" v-if="!ifedit">Email: {{this.userInfo.Email}}</li>
-                    <li class="list-group-item" v-if="ifedit">Email: <input type="text" v-model="this.userInfo.Email"></li>
+                    <li class="list-group-item" v-if="ifedit">Email: <input class="form-control mt-2" type="text" v-model="userInfo.Email"></li>
                     <li class="list-group-item" v-if="!ifedit">Name: {{this.userInfo.Name}}</li>
-                    <li class="list-group-item" v-if="ifedit">Email: <input type="text" v-model="this.userInfo.Name"></li>
+                    <li class="list-group-item" v-if="ifedit">Name: <input class="form-control mt-2" type="text" v-model="userInfo.Name"></li>
                     <li class="list-group-item" v-if="!ifedit">Phone: {{this.userInfo.Phone}}</li>
-                    <li class="list-group-item" v-if="ifedit">Email: <input type="text" v-model="this.userInfo.Phone"></li>
-                    <li class="list-group-item"><button type="button" class="btn btn-info block" v-on:click="edit">Edit <font-awesome-icon class="icon" icon="pen"/></button></li>
+                    <li class="list-group-item" v-if="ifedit">Phone: <input class="form-control mt-2" type="text" v-model="userInfo.Phone"></li>
+                    <li class="list-group-item" ><input id="edit" type="button" class="btn btn-info block" :value="ifedit ? 'Submit' : 'Edit'" v-on:click="editOrSubmit"></li>
                   </ul>
                 </li>
               </ul>
@@ -66,10 +66,9 @@
 // @ is an alias to /src
 import axios from 'axios';
 import $ from 'jquery'
-$('.dropdown-toggle').on('click', function () {
-  $(this).next().toggle();
-});
-$('.dropdown-menu.keep-open').on('click', function (e) {
+
+$(document).on('click', 'dropdown .dropdown-menu', function (e) {
+  console.log("Mario")
   e.stopPropagation();
 });
 
@@ -145,9 +144,30 @@ export default {
         })
       }
     },
-    edit: function () {
-      this.ifedit = true
-    }
+    editOrSubmit: function () {
+      if (!this.ifedit) {
+        this.ifedit = true
+      } else {
+        axios({
+          url: 'http://localhost:8000/userInfo/update',
+          method: 'POST',
+          withCredentials: true,
+          data: {
+            email: this.userInfo.Email,
+            name: this.userInfo.Name,
+            phone: this.userInfo.Phone
+          },
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            "X-Auth": localStorage.getItem('sid')
+
+          }
+        }).then((response) => {
+          console.log(response)
+        })
+      }
+
+    },
   },
 
 }
@@ -155,16 +175,17 @@ export default {
 
 <style scoped>
   .dropdown-menu {
-    width: 20rem;
+    width: 25rem;
   }
   .block {
     float: right;
     display: block;
     border: none;
     padding: 0.1rem 0.2rem;
-    font-size: 0.8rem;
+    font-size: 1rem;
     cursor: pointer;
     text-align: center;
   }
+
 
 </style>
